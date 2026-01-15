@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, RefreshCw, TrendingUp, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { LayoutDashboard, RefreshCw, TrendingUp, Wallet, ArrowUpRight, ArrowDownRight, Eye, EyeOff } from 'lucide-react';
 import AccountList from './components/AccountList';
 import HistoryChart from './components/HistoryChart';
 import BalanceUpdater from './components/BalanceUpdater';
@@ -10,6 +10,7 @@ function App() {
   const [data, setData] = useState({ accounts: [], history: [] });
   const [loading, setLoading] = useState(true);
   const [showUpdater, setShowUpdater] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -130,12 +131,24 @@ function App() {
             <p className="text-secondary text-sm">Track your wealth evolution</p>
           </div>
         </div>
-        <button
-          onClick={() => setShowUpdater(true)}
-          className="btn btn-primary animate-scale-in delay-100"
-        >
-          <RefreshCw size={18} /> Update Balances
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsPrivate(!isPrivate)}
+            className={`p-2.5 rounded-xl transition-all duration-300 border ${isPrivate
+              ? 'bg-accent-primary/20 border-accent-primary/30 text-accent-primary'
+              : 'bg-slate-800/50 border-white/5 text-secondary hover:text-white hover:border-white/10'
+              }`}
+            title={isPrivate ? "Disable Private Mode" : "Enable Private Mode"}
+          >
+            {isPrivate ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+          <button
+            onClick={() => setShowUpdater(true)}
+            className="btn btn-primary animate-scale-in delay-100"
+          >
+            <RefreshCw size={18} /> Update Balances
+          </button>
+        </div>
       </header>
 
       {/* Dashboard Cards */}
@@ -145,7 +158,7 @@ function App() {
             <Wallet size={120} />
           </div>
           <p className="text-secondary text-sm font-medium mb-2 uppercase tracking-wider">Total Net Worth</p>
-          <h2 className="text-5xl font-bold text-white mb-2 tracking-tight">
+          <h2 className={`text-5xl font-bold text-white mb-2 tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
             {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(totalPatrimony)}
           </h2>
           <p className="text-sm text-secondary flex items-center gap-2">
@@ -160,7 +173,7 @@ function App() {
           </div>
           <p className="text-secondary text-sm font-medium mb-2 uppercase tracking-wider">Recent Change</p>
           <div className="flex items-baseline gap-3 mb-2">
-            <h2 className={`text-5xl font-bold tracking-tight ${changeAmount >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
+            <h2 className={`text-5xl font-bold tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''} ${changeAmount >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
               {changeAmount >= 0 ? '+' : ''}{new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(changeAmount)}
             </h2>
           </div>
@@ -174,7 +187,7 @@ function App() {
       {/* Main Content Grid */}
       <div className="space-y-8">
         <div className="animate-slide-up delay-300">
-          <HistoryChart history={sortedHistory} accounts={data.accounts} />
+          <HistoryChart history={sortedHistory} accounts={data.accounts} isPrivate={isPrivate} />
         </div>
         <div className="animate-slide-up delay-300">
           <AccountList
@@ -182,6 +195,8 @@ function App() {
             onAddAccount={handleAddAccount}
             onDeleteAccount={handleDeleteAccount}
             onEditAccount={handleEditAccount}
+            isPrivate={isPrivate}
+            totalPatrimony={totalPatrimony}
           />
         </div>
       </div>

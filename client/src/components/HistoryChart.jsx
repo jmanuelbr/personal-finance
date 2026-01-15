@@ -22,7 +22,7 @@ const TIMEFRAMES = [
     { label: '1D', days: 1 },
 ];
 
-const HistoryChart = ({ history, accounts }) => {
+const HistoryChart = ({ history, accounts, isPrivate }) => {
     // Unique Account Types
     const accountTypes = useMemo(() => ['All', ...new Set(accounts.map(acc => acc.type))], [accounts]);
 
@@ -85,7 +85,7 @@ const HistoryChart = ({ history, accounts }) => {
         setVisibleAccountIds(newSet);
     };
 
-    const CustomTooltip = ({ active, payload, label }) => {
+    const CustomTooltip = ({ active, payload, label, isPrivate }) => {
         if (active && payload && payload.length) {
             const total = payload.reduce((sum, entry) => sum + entry.value, 0);
 
@@ -99,7 +99,7 @@ const HistoryChart = ({ history, accounts }) => {
                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.stroke }}></div>
                                     <span className="text-sm text-slate-200 truncate max-w-[120px]">{accountMeta[p.dataKey]?.name || 'Unknown'}</span>
                                 </div>
-                                <span className="text-sm font-mono text-white">
+                                <span className={`text-sm font-mono text-white transition-all duration-300 ${isPrivate ? 'blur-[5px] select-none' : ''}`}>
                                     {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(p.value)}
                                 </span>
                             </div>
@@ -107,7 +107,7 @@ const HistoryChart = ({ history, accounts }) => {
                     </div>
                     <div className="mt-4 pt-3 border-t border-slate-700/50 flex justify-between items-center">
                         <span className="text-sm font-bold text-white">Total Filtered</span>
-                        <span className="text-sm font-black text-accent-primary">
+                        <span className={`text-sm font-black text-accent-primary transition-all duration-300 ${isPrivate ? 'blur-md select-none' : ''}`}>
                             {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(total)}
                         </span>
                     </div>
@@ -140,8 +140,8 @@ const HistoryChart = ({ history, accounts }) => {
                             key={tf.label}
                             onClick={() => setSelectedTimeframe(tf)}
                             className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedTimeframe.label === tf.label
-                                    ? 'bg-accent-primary text-white shadow-lg'
-                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                ? 'bg-accent-primary text-white shadow-lg'
+                                : 'text-slate-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
                             {tf.label}
@@ -157,8 +157,8 @@ const HistoryChart = ({ history, accounts }) => {
                         key={type}
                         onClick={() => setSelectedType(type)}
                         className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${selectedType === type
-                                ? 'bg-white/10 border-white/20 text-white'
-                                : 'border-transparent text-slate-500 hover:text-slate-300'
+                            ? 'bg-white/10 border-white/20 text-white'
+                            : 'border-transparent text-slate-500 hover:text-slate-300'
                             }`}
                     >
                         {type}
@@ -192,10 +192,10 @@ const HistoryChart = ({ history, accounts }) => {
                             tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 500 }}
                             tickLine={false}
                             axisLine={false}
-                            tickFormatter={(value) => `€${Math.round(value / 1000)}k`}
+                            tickFormatter={(value) => isPrivate ? '***' : `€${Math.round(value / 1000)}k`}
                             dx={-10}
                         />
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip isPrivate={isPrivate} />} />
 
                         {activeAccountIds.map((id) => (
                             <Area

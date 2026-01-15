@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, CreditCard, TrendingUp, PieChart, Wallet, Pencil, X } from 'lucide-react';
 
-const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount }) => {
+const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, isPrivate, totalPatrimony }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
@@ -198,8 +198,8 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount })
                         style={{ animationDelay: `${index * 50}ms` }}
                     >
                         <div className="flex gap-8 p-8">
-                            {/* Logo Container - Left Side */}
-                            <div className="flex-shrink-0">
+                            {/* Logo & Actions Column */}
+                            <div className="flex flex-col items-center gap-4 flex-shrink-0">
                                 <div
                                     style={{ width: '80px', height: '80px' }}
                                     className={`rounded-2xl overflow-hidden flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-accent-primary/20 ${account.logo ? 'bg-white p-3' : 'bg-slate-700 text-accent-primary'}`}
@@ -215,6 +215,26 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount })
                                         <div className="transform scale-[1.5]">
                                             {getIcon(account.type)}
                                         </div>
+                                    )}
+                                </div>
+
+                                {/* Actions - Now below logo */}
+                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                    <button
+                                        onClick={() => handleStartEdit(account)}
+                                        className="p-2.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary hover:text-white transition-all shadow-lg"
+                                        title="Edit account"
+                                    >
+                                        <Pencil size={16} />
+                                    </button>
+                                    {onDeleteAccount && (
+                                        <button
+                                            onClick={() => onDeleteAccount(account.id)}
+                                            className="p-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-lg"
+                                            title="Delete account"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
                                     )}
                                 </div>
                             </div>
@@ -238,31 +258,18 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount })
                                     </div>
                                 </div>
 
-                                <div className="flex items-end justify-between flex-wrap gap-4 mt-6">
-                                    <div className="min-w-0">
-                                        <p className="text-xs text-secondary uppercase tracking-wider font-bold mb-2">Current Balance</p>
-                                        <p className="text-3xl font-black text-emerald-400 tracking-tight truncate">
+                                <div className="mt-auto pt-6">
+                                    <p className="text-xs text-secondary uppercase tracking-wider font-bold mb-2">
+                                        {isPrivate ? 'Contribution' : 'Current Balance'}
+                                    </p>
+                                    <div className="flex items-baseline gap-3">
+                                        <p className={`text-3xl font-black text-emerald-400 tracking-tight truncate transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
                                             {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(account.balance)}
                                         </p>
-                                    </div>
-
-                                    {/* Actions */}
-                                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                                        <button
-                                            onClick={() => handleStartEdit(account)}
-                                            className="p-3 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary hover:text-white transition-all shadow-lg"
-                                            title="Edit account"
-                                        >
-                                            <Pencil size={18} />
-                                        </button>
-                                        {onDeleteAccount && (
-                                            <button
-                                                onClick={() => onDeleteAccount(account.id)}
-                                                className="p-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-lg"
-                                                title="Delete account"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                        {isPrivate && (
+                                            <p className="text-xl font-bold text-accent-primary animate-fade-in">
+                                                {totalPatrimony > 0 ? ((account.balance / totalPatrimony) * 100).toFixed(1) : 0}%
+                                            </p>
                                         )}
                                     </div>
                                 </div>
