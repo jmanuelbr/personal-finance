@@ -109,11 +109,12 @@ function App() {
   // Simple approach: Compare with the entry 30 days ago approx, or just the previous entry.
   // Let's compare with the previous entry for now.
   const previousEntry = sortedHistory.length > 1 ? sortedHistory[sortedHistory.length - 2] : null;
+  const previousAccounts = previousEntry ? previousEntry.accounts : {};
 
   const changeAmount = previousEntry ? totalPatrimony - previousEntry.total : 0;
   const changePercent = previousEntry && previousEntry.total !== 0 ? (changeAmount / previousEntry.total) * 100 : 0;
 
-  if (loading) return <div className="flex items-center justify-center h-screen text-secondary">Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen text-secondary">Cargando...</div>;
   if (error) return <div className="flex items-center justify-center h-screen text-red-400">{error}</div>;
 
   return (
@@ -126,9 +127,9 @@ function App() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-              Patrimony Tracker
+              Seguimiento de Patrimonio
             </h1>
-            <p className="text-secondary text-sm">Track your wealth evolution</p>
+            <p className="text-secondary text-sm">Sigue la evolución de tu riqueza</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -138,7 +139,7 @@ function App() {
               ? 'bg-accent-primary/20 border-accent-primary/30 text-accent-primary'
               : 'bg-slate-800/50 border-white/5 text-secondary hover:text-white hover:border-white/10'
               }`}
-            title={isPrivate ? "Disable Private Mode" : "Enable Private Mode"}
+            title={isPrivate ? "Desactivar Modo Privado" : "Activar Modo Privado"}
           >
             {isPrivate ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
@@ -146,7 +147,7 @@ function App() {
             onClick={() => setShowUpdater(true)}
             className="btn btn-primary animate-scale-in delay-100"
           >
-            <RefreshCw size={18} /> Update Balances
+            <RefreshCw size={18} /> Actualizar Saldos
           </button>
         </div>
       </header>
@@ -157,13 +158,13 @@ function App() {
           <div className="absolute -right-6 -top-6 p-8 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
             <Wallet size={120} />
           </div>
-          <p className="text-secondary text-sm font-medium mb-2 uppercase tracking-wider">Total Net Worth</p>
+          <p className="text-secondary text-sm font-medium mb-2 uppercase tracking-wider">Patrimonio Total</p>
           <h2 className={`text-5xl font-bold text-white mb-2 tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
             {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(totalPatrimony)}
           </h2>
           <p className="text-sm text-secondary flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-accent-success"></span>
-            Across {data.accounts.length} accounts
+            En {data.accounts.length} cuentas
           </p>
         </div>
 
@@ -171,15 +172,15 @@ function App() {
           <div className="absolute -right-6 -top-6 p-8 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
             <TrendingUp size={120} />
           </div>
-          <p className="text-secondary text-sm font-medium mb-2 uppercase tracking-wider">Recent Change</p>
+          <p className="text-secondary text-sm font-medium mb-2 uppercase tracking-wider">Cambio Reciente</p>
           <div className="flex items-baseline gap-3 mb-2">
-            <h2 className={`text-5xl font-bold tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''} ${changeAmount >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
+            <h2 className={`text-5xl font-bold tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''} ${changeAmount >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
               {changeAmount >= 0 ? '+' : ''}{new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(changeAmount)}
             </h2>
           </div>
-          <div className={`flex items-center gap-1 text-sm font-medium ${changeAmount >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
+          <div className={`flex items-center gap-1 text-sm font-medium ${changeAmount >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
             {changeAmount >= 0 ? <ArrowUpRight size={18} /> : <ArrowDownRight size={18} />}
-            <span>{Math.abs(changePercent).toFixed(2)}% vs last update</span>
+            <span>{Math.abs(changePercent).toFixed(2)}% vs actualización anterior</span>
           </div>
         </div>
       </div>
@@ -195,8 +196,10 @@ function App() {
             onAddAccount={handleAddAccount}
             onDeleteAccount={handleDeleteAccount}
             onEditAccount={handleEditAccount}
+            onEditAccount={handleEditAccount}
             isPrivate={isPrivate}
             totalPatrimony={totalPatrimony}
+            previousAccounts={previousAccounts}
           />
         </div>
       </div>

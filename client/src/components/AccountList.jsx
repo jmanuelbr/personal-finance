@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, CreditCard, TrendingUp, PieChart, Wallet, Pencil, X } from 'lucide-react';
 
-const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, isPrivate, totalPatrimony }) => {
+const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, isPrivate, totalPatrimony, previousAccounts }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
@@ -56,7 +56,7 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
             setFormData({ ...formData, logo: `http://localhost:3001${filePath}` });
         } catch (err) {
             console.error(err);
-            alert('Error uploading image');
+            alert('Error al subir la imagen');
         }
     };
 
@@ -73,14 +73,14 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
         <div className="glass-panel h-full">
             <div className="flex-between mb-10">
                 <div>
-                    <h2 className="text-2xl font-black text-white tracking-tight">Your Accounts</h2>
-                    <p className="text-sm text-secondary">Manage your financial sources</p>
+                    <h2 className="text-2xl font-black text-white tracking-tight">Tus Cuentas</h2>
+                    <p className="text-sm text-secondary">Gestiona tus fuentes financieras</p>
                 </div>
                 <button
                     className="group flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-accent-primary to-accent-purple text-white font-bold text-sm shadow-lg shadow-accent-primary/20 hover:shadow-accent-primary/40 hover:-translate-y-1 transition-all"
                     onClick={handleStartAdd}
                 >
-                    <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" /> Add Account
+                    <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" /> Añadir Cuenta
                 </button>
             </div>
 
@@ -94,23 +94,23 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                             <X size={20} />
                         </button>
 
-                        <h3 className="text-xl font-bold mb-6">{editingId ? 'Edit Account' : 'Add New Account'}</h3>
+                        <h3 className="text-xl font-bold mb-6">{editingId ? 'Editar Cuenta' : 'Añadir Nueva Cuenta'}</h3>
 
                         <form onSubmit={handleSubmit}>
                             <div className="grid grid-cols-1 gap-4 mb-8">
                                 <div>
-                                    <label className="block text-xs font-medium text-secondary mb-1.5 uppercase tracking-wider">Name</label>
+                                    <label className="block text-xs font-medium text-secondary mb-1.5 uppercase tracking-wider">Nombre</label>
                                     <input
                                         className="input-field"
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                                         required
-                                        placeholder="e.g. Main Savings"
+                                        placeholder="ej. Cuenta de Ahorros"
                                         autoFocus
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-secondary mb-1.5 uppercase tracking-wider">Type</label>
+                                    <label className="block text-xs font-medium text-secondary mb-1.5 uppercase tracking-wider">Tipo</label>
                                     <select
                                         className="input-field appearance-none"
                                         value={formData.type}
@@ -123,7 +123,7 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-secondary mb-1.5 uppercase tracking-wider">IBAN (Optional)</label>
+                                    <label className="block text-xs font-medium text-secondary mb-1.5 uppercase tracking-wider">IBAN (Opcional)</label>
                                     <input
                                         className="input-field"
                                         value={formData.iban}
@@ -156,7 +156,7 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                                 htmlFor="logo-upload"
                                                 className="btn btn-secondary text-xs py-2 px-4 cursor-pointer hover:bg-slate-700"
                                             >
-                                                {formData.logo ? 'Change Image' : 'Upload Image'}
+                                                {formData.logo ? 'Cambiar Imagen' : 'Subir Imagen'}
                                             </label>
                                             {formData.logo && (
                                                 <button
@@ -164,14 +164,14 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                                     onClick={() => setFormData({ ...formData, logo: '' })}
                                                     className="text-xs text-red-400 ml-3 hover:underline"
                                                 >
-                                                    Remove
+                                                    Eliminar
                                                 </button>
                                             )}
                                         </div>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-secondary mb-1.5 uppercase tracking-wider">Current Balance (€)</label>
+                                    <label className="block text-xs font-medium text-secondary mb-1.5 uppercase tracking-wider">Saldo Actual (€)</label>
                                     <input
                                         type="number"
                                         step="0.01"
@@ -182,8 +182,8 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                 </div>
                             </div>
                             <div className="flex justify-end gap-3">
-                                <button type="button" className="btn btn-secondary" onClick={resetForm}>Cancel</button>
-                                <button type="submit" className="btn btn-primary">{editingId ? 'Update' : 'Save'} Account</button>
+                                <button type="button" className="btn btn-secondary" onClick={resetForm}>Cancelar</button>
+                                <button type="submit" className="btn btn-primary">{editingId ? 'Actualizar' : 'Guardar'} Cuenta</button>
                             </div>
                         </form>
                     </div>
@@ -223,7 +223,7 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                     <button
                                         onClick={() => handleStartEdit(account)}
                                         className="p-2.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary hover:text-white transition-all shadow-lg"
-                                        title="Edit account"
+                                        title="Editar cuenta"
                                     >
                                         <Pencil size={16} />
                                     </button>
@@ -231,7 +231,7 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                         <button
                                             onClick={() => onDeleteAccount(account.id)}
                                             className="p-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-lg"
-                                            title="Delete account"
+                                            title="Eliminar cuenta"
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -251,7 +251,7 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                             {account.type}
                                         </span>
                                         {account.iban ? (
-                                            <span className="font-mono text-slate-500 text-xs truncate ml-2">
+                                            <span className={`font-mono text-slate-500 text-xs truncate ml-2 transition-all duration-300 ${isPrivate ? 'blur-[3px] select-none opacity-50' : ''}`}>
                                                 {account.iban}
                                             </span>
                                         ) : (
@@ -263,9 +263,31 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                 </div>
 
                                 <div className="mt-auto pt-6">
-                                    <p className="text-xs text-secondary uppercase tracking-wider font-bold mb-2">
-                                        {isPrivate ? 'Contribution' : 'Current Balance'}
-                                    </p>
+                                    <div className="flex justify-between items-end mb-2">
+                                        <p className="text-xs text-secondary uppercase tracking-wider font-bold">
+                                            {isPrivate ? 'Contribución' : 'Saldo Actual'}
+                                        </p>
+
+                                        {/* Percentage Change Indicator */}
+                                        {(() => {
+                                            const prevBalance = previousAccounts?.[account.id];
+                                            if (prevBalance !== undefined && prevBalance !== 0) {
+                                                const diff = account.balance - prevBalance;
+                                                const pct = (diff / prevBalance) * 100;
+                                                // Only show if there is a change (and maybe ignore very small changes?)
+                                                if (Math.abs(pct) > 0.01) {
+                                                    const isPos = pct >= 0;
+                                                    return (
+                                                        <div className={`flex items-center gap-1 text-xs font-bold ${isPos ? 'text-emerald-400' : 'text-red-400'}`}>
+                                                            {isPos ? <TrendingUp size={12} /> : <TrendingUp size={12} className="rotate-180" />}
+                                                            {isPos ? '+' : ''}{pct.toFixed(1)}%
+                                                        </div>
+                                                    );
+                                                }
+                                            }
+                                            return null;
+                                        })()}
+                                    </div>
                                     <div className="flex items-baseline gap-3">
                                         <p className={`text-3xl font-black text-emerald-400 tracking-tight truncate transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
                                             {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(account.balance)}
@@ -286,8 +308,8 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                         <div className="inline-flex p-4 rounded-full bg-slate-800/50 text-slate-600 mb-3">
                             <CreditCard size={32} />
                         </div>
-                        <p className="text-secondary font-medium">No accounts yet</p>
-                        <p className="text-sm text-slate-500 mt-1">Add your first account to get started</p>
+                        <p className="text-secondary font-medium">No hay cuentas todavía</p>
+                        <p className="text-sm text-slate-500 mt-1">Añade tu primera cuenta para empezar</p>
                     </div>
                 )}
             </div>

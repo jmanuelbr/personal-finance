@@ -31,8 +31,8 @@ const BalanceUpdater = ({ accounts, onSave, onCancel }) => {
             <div className="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-scale-in shadow-2xl border-slate-700/50">
                 <div className="flex-between mb-8 sticky top-0 bg-slate-900/50 backdrop-blur-xl -mx-8 -mt-8 p-8 border-b border-white/5 z-10">
                     <div>
-                        <h2 className="text-2xl font-bold">Update Balances</h2>
-                        <p className="text-sm text-secondary">Enter the current value for each account</p>
+                        <h2 className="text-2xl font-bold">Actualizar Saldos</h2>
+                        <p className="text-sm text-secondary">Introduzca el valor actual de cada cuenta</p>
                     </div>
                     <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-lg transition-colors text-secondary hover:text-white">
                         <X size={24} />
@@ -80,15 +80,15 @@ const BalanceUpdater = ({ accounts, onSave, onCancel }) => {
 
                     <div className="flex-between border-t border-white/10 pt-6 mt-8">
                         <div>
-                            <p className="text-sm text-secondary font-medium uppercase tracking-wider mb-1">New Total Estimate</p>
+                            <p className="text-sm text-secondary font-medium uppercase tracking-wider mb-1">Nueva Estimación Total</p>
                             <p className="text-3xl font-bold text-accent-success tracking-tight">
                                 {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(total)}
                             </p>
                         </div>
                         <div className="flex gap-3">
-                            <button type="button" onClick={onCancel} className="btn btn-secondary">Cancel</button>
+                            <button type="button" onClick={onCancel} className="btn btn-secondary">Cancelar</button>
                             <button type="submit" className="btn btn-primary flex items-center gap-2 px-6">
-                                <Save size={18} /> Save Updates
+                                <Save size={18} /> Guardar Cambios
                             </button>
                         </div>
                     </div>
