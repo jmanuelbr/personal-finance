@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const COLORS = [
@@ -8,48 +8,96 @@ const COLORS = [
     '#f472b6', // Pink
     '#fbbf24', // Amber
     '#f87171', // Red
+    '#6366f1', // Indigo
+    '#14b8a6', // Teal
+];
+
+const TIMEFRAMES = [
+    { label: 'ALL', days: Infinity },
+    { label: '1Y', days: 365 },
+    { label: '6M', days: 180 },
+    { label: '3M', days: 90 },
+    { label: '1M', days: 30 },
+    { label: '1W', days: 7 },
+    { label: '1D', days: 1 },
 ];
 
 const HistoryChart = ({ history, accounts }) => {
-    if (!history || history.length === 0) {
-        return (
-            <div className="glass-panel" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <p className="text-secondary text-lg">No historical data available yet. Start tracking your wealth by updating balances!</p>
-            </div>
-        );
-    }
+    // Unique Account Types
+    const accountTypes = useMemo(() => ['All', ...new Set(accounts.map(acc => acc.type))], [accounts]);
 
-    // Get unique account IDs from history to create areas
-    const accountIds = Array.from(new Set(
-        history.flatMap(entry => Object.keys(entry.accounts || {}))
-    ));
+    // State
+    const [selectedTimeframe, setSelectedTimeframe] = useState(TIMEFRAMES[0]);
+    const [selectedType, setSelectedType] = useState('All');
+    const [visibleAccountIds, setVisibleAccountIds] = useState(new Set(accounts.map(acc => acc.id)));
 
-    // Map account IDs to names for labeling
-    const accountNames = {};
-    accounts.forEach(acc => {
-        accountNames[acc.id] = acc.name;
-    });
+    // Filtering Logic
+    const filteredHistory = useMemo(() => {
+        if (!history || history.length === 0) return [];
 
-    // Format data for the chart: { date, total, [accId1]: val1, [accId2]: val2, ... }
-    const chartData = history.map(entry => ({
-        date: new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-        total: entry.total,
-        ...entry.accounts
-    }));
+        const now = new Date();
+        const cutoff = new Date(now.getTime() - selectedTimeframe.days * 24 * 60 * 60 * 1000);
+
+        return history
+            .filter(entry => selectedTimeframe.days === Infinity || new Date(entry.date) >= cutoff)
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+    }, [history, selectedTimeframe]);
+
+    // Accounts that belong to the selected type
+    const accountsInType = useMemo(() => {
+        return accounts.filter(acc => selectedType === 'All' || acc.type === selectedType);
+    }, [accounts, selectedType]);
+
+    const activeAccountIds = useMemo(() => {
+        return accountsInType.filter(acc => visibleAccountIds.has(acc.id)).map(acc => acc.id);
+    }, [accountsInType, visibleAccountIds]);
+
+    // Map account IDs to names/colors
+    const accountMeta = useMemo(() => {
+        const meta = {};
+        accounts.forEach((acc, i) => {
+            meta[acc.id] = {
+                name: acc.name,
+                color: COLORS[i % COLORS.length]
+            };
+        });
+        return meta;
+    }, [accounts]);
+
+    // Format data for Recharts
+    const chartData = useMemo(() => {
+        return filteredHistory.map(entry => {
+            const row = {
+                date: new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                timestamp: new Date(entry.date).getTime()
+            };
+            activeAccountIds.forEach(id => {
+                row[id] = entry.accounts?.[id] || 0;
+            });
+            return row;
+        });
+    }, [filteredHistory, activeAccountIds]);
+
+    const toggleAccount = (id) => {
+        const newSet = new Set(visibleAccountIds);
+        if (newSet.has(id)) newSet.delete(id);
+        else newSet.add(id);
+        setVisibleAccountIds(newSet);
+    };
 
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
-            const total = payload.reduce((sum, entry) => sum + (entry.dataKey !== 'total' ? entry.value : 0), 0);
+            const total = payload.reduce((sum, entry) => sum + entry.value, 0);
 
             return (
-                <div className="glass-panel p-4 shadow-2xl border-slate-700/50 min-w-[200px]">
+                <div className="glass-panel p-4 shadow-2xl border-slate-700/50 min-w-[220px]">
                     <p className="text-slate-400 text-xs uppercase tracking-wider font-bold mb-3">{label}</p>
-                    <div className="space-y-2">
-                        {payload.filter(p => p.dataKey !== 'total').reverse().map((p, i) => (
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                        {payload.slice().reverse().map((p, i) => (
                             <div key={i} className="flex justify-between items-center gap-4">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.stroke }}></div>
-                                    <span className="text-sm text-slate-200">{accountNames[p.dataKey] || 'Unknown Account'}</span>
+                                    <span className="text-sm text-slate-200 truncate max-w-[120px]">{accountMeta[p.dataKey]?.name || 'Unknown'}</span>
                                 </div>
                                 <span className="text-sm font-mono text-white">
                                     {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(p.value)}
@@ -58,7 +106,7 @@ const HistoryChart = ({ history, accounts }) => {
                         ))}
                     </div>
                     <div className="mt-4 pt-3 border-t border-slate-700/50 flex justify-between items-center">
-                        <span className="text-sm font-bold text-white">Total</span>
+                        <span className="text-sm font-bold text-white">Total Filtered</span>
                         <span className="text-sm font-black text-accent-primary">
                             {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(total)}
                         </span>
@@ -69,31 +117,64 @@ const HistoryChart = ({ history, accounts }) => {
         return null;
     };
 
+    if (!history || history.length === 0) {
+        return (
+            <div className="glass-panel" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <p className="text-secondary text-lg">No historical data available yet.</p>
+            </div>
+        );
+    }
+
     return (
         <div className="glass-panel h-full flex flex-col p-8">
-            <div className="flex justify-between items-center mb-10">
+            {/* Header with Timeline and Title */}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10">
                 <div>
                     <h2 className="text-2xl font-black text-white tracking-tight">Patrimony Evolution</h2>
-                    <p className="text-sm text-secondary">Individual and total net worth trends</p>
+                    <p className="text-sm text-secondary">Analyze trends with custom filters</p>
                 </div>
-                <div className="flex gap-4">
-                    {accountIds.map((id, i) => (
-                        <div key={id} className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }}></div>
-                            <span className="text-xs text-secondary font-medium">{accountNames[id] || 'Other'}</span>
-                        </div>
+
+                <div className="flex bg-slate-800/50 p-1 rounded-xl border border-white/5">
+                    {TIMEFRAMES.map((tf) => (
+                        <button
+                            key={tf.label}
+                            onClick={() => setSelectedTimeframe(tf)}
+                            className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedTimeframe.label === tf.label
+                                    ? 'bg-accent-primary text-white shadow-lg'
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                }`}
+                        >
+                            {tf.label}
+                        </button>
                     ))}
                 </div>
             </div>
 
+            {/* Type Filter Pills */}
+            <div className="flex flex-wrap gap-2 mb-8">
+                {accountTypes.map(type => (
+                    <button
+                        key={type}
+                        onClick={() => setSelectedType(type)}
+                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${selectedType === type
+                                ? 'bg-white/10 border-white/20 text-white'
+                                : 'border-transparent text-slate-500 hover:text-slate-300'
+                            }`}
+                    >
+                        {type}
+                    </button>
+                ))}
+            </div>
+
+            {/* Main Chart Area */}
             <div style={{ width: '100%', height: '400px' }}>
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                         <defs>
-                            {accountIds.map((id, i) => (
+                            {activeAccountIds.map((id) => (
                                 <linearGradient key={`grad-${id}`} id={`color-${id}`} x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor={COLORS[i % COLORS.length]} stopOpacity={0.4} />
-                                    <stop offset="95%" stopColor={COLORS[i % COLORS.length]} stopOpacity={0} />
+                                    <stop offset="5%" stopColor={accountMeta[id].color} stopOpacity={0.4} />
+                                    <stop offset="95%" stopColor={accountMeta[id].color} stopOpacity={0} />
                                 </linearGradient>
                             ))}
                         </defs>
@@ -116,14 +197,13 @@ const HistoryChart = ({ history, accounts }) => {
                         />
                         <Tooltip content={<CustomTooltip />} />
 
-                        {/* Stacked Areas */}
-                        {accountIds.map((id, i) => (
+                        {activeAccountIds.map((id) => (
                             <Area
                                 key={id}
                                 type="monotone"
                                 dataKey={id}
                                 stackId="1"
-                                stroke={COLORS[i % COLORS.length]}
+                                stroke={accountMeta[id].color}
                                 strokeWidth={3}
                                 fillOpacity={1}
                                 fill={`url(#color-${id})`}
@@ -132,6 +212,26 @@ const HistoryChart = ({ history, accounts }) => {
                         ))}
                     </AreaChart>
                 </ResponsiveContainer>
+            </div>
+
+            {/* Interactive Legend */}
+            <div className="flex flex-wrap gap-x-6 gap-y-3 mt-10 pt-6 border-t border-white/5">
+                {accountsInType.map((acc) => (
+                    <button
+                        key={acc.id}
+                        onClick={() => toggleAccount(acc.id)}
+                        className={`flex items-center gap-2 group transition-opacity ${visibleAccountIds.has(acc.id) ? 'opacity-100' : 'opacity-30'
+                            }`}
+                    >
+                        <div
+                            className="w-3 h-3 rounded-full transition-transform group-hover:scale-125"
+                            style={{ backgroundColor: accountMeta[acc.id].color }}
+                        ></div>
+                        <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">
+                            {acc.name}
+                        </span>
+                    </button>
+                ))}
             </div>
         </div>
     );
