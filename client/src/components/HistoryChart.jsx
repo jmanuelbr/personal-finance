@@ -167,7 +167,7 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
             {/* Main Chart Area */}
             <div style={{ width: '100%', height: '400px' }}>
                 <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
                         <defs>
                             {activeAccountIds.map((id) => (
                                 <linearGradient key={`grad-${id}`} id={`color-${id}`} x1="0" y1="0" x2="0" y2="1">
@@ -183,7 +183,7 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
                             tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 500 }}
                             tickLine={false}
                             axisLine={false}
-                            dy={15}
+                            dy={10}
                         />
                         <YAxis
                             stroke="#475569"
@@ -191,7 +191,7 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
                             tickLine={false}
                             axisLine={false}
                             tickFormatter={(value) => isPrivate ? '***' : `€${Math.round(value / 1000)}k`}
-                            dx={-10}
+                            dx={-5}
                         />
                         <Tooltip content={<CustomTooltip isPrivate={isPrivate} />} />
 

@@ -10,7 +10,7 @@ function App() {
   const [data, setData] = useState({ accounts: [], history: [] });
   const [loading, setLoading] = useState(true);
   const [showUpdater, setShowUpdater] = useState(false);
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
