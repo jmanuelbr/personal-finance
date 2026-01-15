@@ -242,7 +242,7 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                             {/* Content - Right Side */}
                             <div className="flex-1 min-w-0 flex flex-col justify-between">
                                 <div>
-                                    <h3 className="text-2xl font-black text-white mb-3 truncate group-hover:text-accent-primary transition-colors">
+                                    <h3 className="text-2xl font-black text-white mb-5 truncate group-hover:text-accent-primary transition-colors">
                                         {account.name}
                                     </h3>
                                     <div className="flex items-center gap-3 flex-wrap">
@@ -250,9 +250,13 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                             {getIcon(account.type)}
                                             {account.type}
                                         </span>
-                                        {account.iban && (
+                                        {account.iban ? (
                                             <span className="font-mono text-slate-500 text-xs truncate ml-2">
                                                 {account.iban}
+                                            </span>
+                                        ) : (
+                                            <span className="font-mono text-slate-500/0 text-xs select-none ml-2">
+                                                ES00 0000 0000 0000 0000 0000
                                             </span>
                                         )}
                                     </div>

@@ -18,8 +18,6 @@ const TIMEFRAMES = [
     { label: '6M', days: 180 },
     { label: '3M', days: 90 },
     { label: '1M', days: 30 },
-    { label: '1W', days: 7 },
-    { label: '1D', days: 1 },
 ];
 
 const HistoryChart = ({ history, accounts, isPrivate }) => {
