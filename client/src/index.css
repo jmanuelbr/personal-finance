@@ -38,7 +38,19 @@ body {
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  #root {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  #root {
+    padding: 2rem;
+  }
 }
 
 h1,
@@ -122,12 +134,18 @@ button {
   border: 1px solid var(--glass-border);
   border-top: 1px solid var(--glass-highlight);
   border-radius: 1.5rem;
-  padding: 2rem;
+  padding: clamp(1rem, 2.5vw, 2rem);
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06),
     inset 0 0 20px rgba(255, 255, 255, 0.02);
   transition: transform 0.3s var(--ease-out-back), box-shadow 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .glass-panel {
+    padding: clamp(1.5rem, 2vw, 2rem);
+  }
 }
 
 .glass-panel:hover {
@@ -193,8 +211,14 @@ button {
 
 .grid-layout {
   display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
+@media (min-width: 768px) {
+  .grid-layout {
+    gap: 2rem;
+  }
 }
 
 .flex-between {

@@ -29,9 +29,9 @@ const BalanceUpdater = ({ accounts, onSave, onCancel }) => {
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
             <div className="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-scale-in shadow-2xl border-slate-700/50">
-                <div className="flex-between mb-8 sticky top-0 bg-slate-900/50 backdrop-blur-xl -mx-8 -mt-8 p-8 border-b border-white/5 z-10">
+                <div className="flex-between mb-6 sm:mb-8 sticky top-0 bg-slate-900/50 backdrop-blur-xl -mx-4 sm:-mx-8 -mt-4 sm:-mt-8 p-4 sm:p-8 border-b border-white/5 z-10">
                     <div>
-                        <h2 className="text-2xl font-bold">Actualizar Saldos</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold">Actualizar Saldos</h2>
                         <p className="text-sm text-secondary">Introduzca el valor actual de cada cuenta</p>
                     </div>
                     <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-lg transition-colors text-secondary hover:text-white">
@@ -44,7 +44,7 @@ const BalanceUpdater = ({ accounts, onSave, onCancel }) => {
                         {accounts.map((account, index) => (
                             <div
                                 key={account.id}
-                                className="flex items-center gap-6 p-6 bg-slate-800/30 rounded-[2rem] border border-slate-700/30 hover:border-accent-primary/30 transition-all group"
+                                className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-4 sm:p-6 bg-slate-800/30 rounded-[2rem] border border-slate-700/30 hover:border-accent-primary/30 transition-all group"
                                 style={{ animationDelay: `${index * 50}ms` }}
                             >
                                 <div
@@ -59,16 +59,16 @@ const BalanceUpdater = ({ accounts, onSave, onCancel }) => {
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex-1">
+                                <div className="flex-1 min-w-0">
                                     <h3 className="font-bold text-lg text-white">{account.name}</h3>
                                     <p className="text-xs text-secondary uppercase tracking-widest font-bold">{account.type}</p>
                                 </div>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
                                     <span className="text-secondary font-medium text-lg">€</span>
                                     <input
                                         type="number"
                                         step="0.01"
-                                        className="input-field w-40 text-right font-mono text-xl font-black bg-slate-900/50 border-slate-700/50 focus:border-accent-primary"
+                                        className="input-field w-full sm:w-40 text-right font-mono text-xl font-black bg-slate-900/50 border-slate-700/50 focus:border-accent-primary"
                                         value={balances[account.id] || ''}
                                         onChange={(e) => handleChange(account.id, e.target.value)}
                                         onFocus={(e) => e.target.select()}
@@ -78,14 +78,14 @@ const BalanceUpdater = ({ accounts, onSave, onCancel }) => {
                         ))}
                     </div>
 
-                    <div className="flex-between border-t border-white/10 pt-6 mt-8">
+                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 border-t border-white/10 pt-6 mt-8">
                         <div>
                             <p className="text-sm text-secondary font-medium uppercase tracking-wider mb-1">Nueva Estimación Total</p>
                             <p className="text-3xl font-bold text-accent-success tracking-tight">
                                 {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(total)}
                             </p>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
                             <button type="button" onClick={onCancel} className="btn btn-secondary">Cancelar</button>
                             <button type="submit" className="btn btn-primary flex items-center gap-2 px-6">
                                 <Save size={18} /> Guardar Cambios

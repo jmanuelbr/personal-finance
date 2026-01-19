@@ -194,22 +194,24 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
 
     if (!history || history.length === 0) {
         return (
-            <div className="glass-panel" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <p className="text-secondary text-lg">No hay datos históricos disponibles todavía.</p>
+            <div className="glass-panel h-[260px] sm:h-[400px] flex items-center justify-center">
+                <p className="text-secondary text-base sm:text-lg text-center px-2">
+                    No hay datos históricos disponibles todavía.
+                </p>
             </div>
         );
     }
 
     return (
-        <div className="glass-panel h-full flex flex-col p-8 transition-all duration-500">
+        <div className="glass-panel h-full flex flex-col p-4 sm:p-8 transition-all duration-500">
             {/* Header with Tabs and Sub-filters */}
-            <div className="flex flex-col gap-8 mb-10">
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div className="flex flex-col gap-6 sm:gap-8 mb-8 sm:mb-10">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 sm:gap-6">
                     <div className="flex items-center gap-4">
-                        <div className="flex bg-slate-800/80 p-1 rounded-2xl border border-white/10 shadow-inner">
+                        <div className="flex bg-slate-800/80 p-1 rounded-2xl border border-white/10 shadow-inner w-full sm:w-auto">
                             <button
                                 onClick={() => setActiveTab('evolution')}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all duration-300 ${activeTab === 'evolution'
+                                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl text-sm font-black transition-all duration-300 ${activeTab === 'evolution'
                                     ? 'bg-gradient-to-r from-accent-primary to-accent-purple text-white shadow-lg'
                                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                                     }`}
@@ -218,7 +220,7 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
                             </button>
                             <button
                                 onClick={() => setActiveTab('distribution')}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all duration-300 ${activeTab === 'distribution'
+                                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl text-sm font-black transition-all duration-300 ${activeTab === 'distribution'
                                     ? 'bg-gradient-to-r from-accent-primary to-accent-purple text-white shadow-lg'
                                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                                     }`}
@@ -229,7 +231,7 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
                     </div>
 
                     {activeTab === 'evolution' ? (
-                        <div className="flex bg-slate-800/50 p-1 rounded-xl border border-white/5">
+                        <div className="flex bg-slate-800/50 p-1 rounded-xl border border-white/5 w-full sm:w-auto overflow-x-auto">
                             {TIMEFRAMES.map((tf) => (
                                 <button
                                     key={tf.label}
@@ -244,10 +246,10 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex bg-slate-800/50 p-1 rounded-xl border border-white/5">
+                        <div className="flex bg-slate-800/50 p-1 rounded-xl border border-white/5 w-full sm:w-auto">
                             <button
                                 onClick={() => setDistributionType('accounts')}
-                                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${distributionType === 'accounts'
+                                className={`flex-1 sm:flex-none px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${distributionType === 'accounts'
                                     ? 'bg-accent-primary text-white shadow-lg'
                                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                                     }`}
@@ -256,7 +258,7 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
                             </button>
                             <button
                                 onClick={() => setDistributionType('types')}
-                                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${distributionType === 'types'
+                                className={`flex-1 sm:flex-none px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${distributionType === 'types'
                                     ? 'bg-accent-primary text-white shadow-lg'
                                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                                     }`}
@@ -268,7 +270,7 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
                 </div>
 
                 <div className="flex flex-col">
-                    <h2 className="text-2xl font-black text-white tracking-tight">
+                    <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                         {activeTab === 'evolution' ? 'Evolución del Patrimonio' : 'Distribución de Activos'}
                     </h2>
                     <p className="text-sm text-secondary">
@@ -295,7 +297,7 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
                         ))}
                     </div>
 
-                    <div style={{ width: '100%', height: '400px' }} className="animate-scale-in">
+                    <div className="w-full h-[260px] sm:h-[360px] lg:h-[400px] animate-scale-in">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
                                 <defs>
@@ -365,16 +367,16 @@ const HistoryChart = ({ history, accounts, isPrivate }) => {
 
             {/* Distribution Tab Content */}
             {activeTab === 'distribution' && (
-                <div className="flex flex-col lg:flex-row items-center gap-12 mt-4 animate-fade-in">
-                    <div style={{ width: '100%', height: '400px', flex: '1.2' }} className="animate-scale-in">
+                <div className="flex flex-col lg:flex-row items-center gap-8 sm:gap-12 mt-4 animate-fade-in">
+                    <div className="w-full h-[260px] sm:h-[360px] lg:h-[400px] animate-scale-in lg:flex-[1.2]">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
                                     data={distributionData}
                                     cx="50%"
                                     cy="50%"
-                                    innerRadius={110}
-                                    outerRadius={160}
+                                    innerRadius={80}
+                                    outerRadius={120}
                                     paddingAngle={5}
                                     dataKey="value"
                                     stroke="rgba(255,255,255,0.05)"

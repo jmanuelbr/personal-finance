@@ -71,13 +71,13 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
 
     return (
         <div className="glass-panel h-full">
-            <div className="flex-between mb-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 mb-8 md:mb-10">
                 <div>
-                    <h2 className="text-2xl font-black text-white tracking-tight">Tus Cuentas</h2>
+                    <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">Tus Cuentas</h2>
                     <p className="text-sm text-secondary">Gestiona tus fuentes financieras</p>
                 </div>
                 <button
-                    className="group flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-accent-primary to-accent-purple text-white font-bold text-sm shadow-lg shadow-accent-primary/20 hover:shadow-accent-primary/40 hover:-translate-y-1 transition-all"
+                    className="w-full md:w-auto group flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-accent-primary to-accent-purple text-white font-bold text-sm shadow-lg shadow-accent-primary/20 hover:shadow-accent-primary/40 hover:-translate-y-1 transition-all"
                     onClick={handleStartAdd}
                 >
                     <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" /> Añadir Cuenta
@@ -197,7 +197,7 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                         className="group relative rounded-3xl bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800/60 hover:border-accent-primary/40 transition-all duration-300 hover:shadow-2xl overflow-hidden"
                         style={{ animationDelay: `${index * 50}ms` }}
                     >
-                        <div className="flex gap-8 p-8">
+                        <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8">
                             {/* Logo & Actions Column */}
                             <div className="flex flex-col items-center gap-4 flex-shrink-0">
                                 <div
@@ -289,7 +289,7 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                         })()}
                                     </div>
                                     <div className="flex items-baseline gap-3">
-                                        <p className={`text-3xl font-black text-emerald-400 tracking-tight truncate transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
+                                        <p className={`text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight truncate transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
                                             {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(account.balance)}
                                         </p>
                                         {isPrivate && (

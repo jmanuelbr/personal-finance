@@ -120,19 +120,19 @@ function App() {
   return (
     <div className="min-h-screen pb-12 animate-fade-in">
       {/* Header */}
-      <header className="flex-between mb-12 py-6">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-0 mb-8 md:mb-12 py-6">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-gradient-to-br from-accent-primary to-accent-purple rounded-xl shadow-lg shadow-accent-primary/20">
             <LayoutDashboard className="text-white" size={28} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+            <h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
               Seguimiento de Patrimonio
             </h1>
             <p className="text-secondary text-sm">Sigue la evolución de tu riqueza</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full md:w-auto">
           <button
             onClick={() => setIsPrivate(!isPrivate)}
             className={`p-2.5 rounded-xl transition-all duration-300 border ${isPrivate
@@ -145,7 +145,7 @@ function App() {
           </button>
           <button
             onClick={() => setShowUpdater(true)}
-            className="btn btn-primary animate-scale-in delay-100"
+            className="btn btn-primary animate-scale-in delay-100 flex-1 md:flex-none"
           >
             <RefreshCw size={18} /> Actualizar Saldos
           </button>
@@ -159,7 +159,7 @@ function App() {
             <Wallet size={120} />
           </div>
           <p className="text-secondary text-sm font-medium mb-2 uppercase tracking-wider">Patrimonio Total</p>
-          <h2 className={`text-5xl font-bold text-white mb-2 tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
+          <h2 className={`text-3xl md:text-5xl font-bold text-white mb-2 tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
             {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(totalPatrimony)}
           </h2>
           <p className="text-sm text-secondary flex items-center gap-2">
@@ -174,7 +174,7 @@ function App() {
           </div>
           <p className="text-secondary text-sm font-medium mb-2 uppercase tracking-wider">Cambio Reciente</p>
           <div className="flex items-baseline gap-3 mb-2">
-            <h2 className={`text-5xl font-bold tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''} ${changeAmount >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <h2 className={`text-3xl md:text-5xl font-bold tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''} ${changeAmount >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
               {changeAmount >= 0 ? '+' : ''}{new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(changeAmount)}
             </h2>
           </div>
