@@ -81,12 +81,16 @@ app.post('/api/data', (req, res) => {
     });
 });
 
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
+// The "catchall" handler
 app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+const HOST = '0.0.0.0';
+app.listen(PORT, HOST, () => {
+    console.log(`Server is running on http://${HOST}:${PORT}`);
+});
+
+process.on('SIGINT', () => {
+    process.exit(0);
 });

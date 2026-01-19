@@ -4,7 +4,7 @@ import AccountList from './components/AccountList';
 import HistoryChart from './components/HistoryChart';
 import BalanceUpdater from './components/BalanceUpdater';
 
-const API_URL = 'http://localhost:3001/api/data';
+const API_URL = '/api/data';
 
 function App() {
   const [data, setData] = useState({ accounts: [], history: [] });
@@ -195,7 +195,6 @@ function App() {
             accounts={data.accounts}
             onAddAccount={handleAddAccount}
             onDeleteAccount={handleDeleteAccount}
-            onEditAccount={handleEditAccount}
             onEditAccount={handleEditAccount}
             isPrivate={isPrivate}
             totalPatrimony={totalPatrimony}
