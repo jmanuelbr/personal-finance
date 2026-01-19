@@ -194,32 +194,51 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                 {accounts.map((account, index) => (
                     <div
                         key={account.id}
-                        className="group relative rounded-3xl bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800/60 hover:border-accent-primary/40 transition-all duration-300 hover:shadow-2xl overflow-hidden"
+                        className="group relative rounded-2xl sm:rounded-3xl bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800/60 hover:border-accent-primary/40 transition-all duration-300 hover:shadow-2xl overflow-hidden"
                         style={{ animationDelay: `${index * 50}ms` }}
                     >
-                        <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8">
-                            {/* Logo & Actions Column */}
-                            <div className="flex flex-col items-center gap-4 flex-shrink-0">
+                        {/* Mobile: 2-row layout, Desktop: original layout */}
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 p-3 sm:p-8">
+                            {/* Row 1: Logo + Info (Mobile) / Logo Column (Desktop) */}
+                            <div className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-4 flex-shrink-0">
+                                {/* Logo - Smaller on mobile */}
                                 <div
-                                    style={{ width: '80px', height: '80px' }}
-                                    className={`rounded-2xl overflow-hidden flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-accent-primary/20 ${account.logo ? 'bg-white p-3' : 'bg-slate-700 text-accent-primary'}`}
+                                    style={{ width: '48px', height: '48px' }}
+                                    className={`sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl overflow-hidden flex items-center justify-center shadow-lg sm:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-accent-primary/20 flex-shrink-0 ${account.logo ? 'bg-white p-0.5 sm:p-1' : 'bg-slate-700 text-accent-primary'}`}
                                 >
                                     {account.logo ? (
                                         <img
                                             src={account.logo}
                                             alt={account.name}
-                                            style={{ maxWidth: '80px', maxHeight: '80px', width: '100%', height: '100%' }}
-                                            className="object-contain"
+                                            className="w-full h-full object-contain rounded-xl sm:rounded-2xl"
                                         />
                                     ) : (
-                                        <div className="transform scale-[1.5]">
+                                        <div className="transform scale-125 sm:scale-150">
                                             {getIcon(account.type)}
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Actions - Now below logo */}
-                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                {/* Info Section - Right of logo on mobile, hidden on desktop (shown in content area) */}
+                                <div className="flex-1 min-w-0 sm:hidden">
+                                    <h3 className="text-base font-black text-white mb-1 truncate group-hover:text-accent-primary transition-colors">
+                                        {account.name}
+                                    </h3>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-700/50 border border-slate-600/50 font-semibold text-secondary text-xs">
+                                            {getIcon(account.type)}
+                                            <span className="hidden min-[375px]:inline">{account.type}</span>
+                                        </span>
+                                        {account.iban && (
+                                            <span className={`font-mono text-slate-500 text-[10px] truncate transition-all duration-300 ${isPrivate ? 'blur-[3px] select-none opacity-50' : ''}`}>
+                                                {account.iban.slice(-4)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Actions - Desktop: below logo (prevents overlap with content) */}
+                                <div className="hidden sm:flex gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                     <button
                                         onClick={() => handleStartEdit(account)}
                                         className="p-2.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary hover:text-white transition-all shadow-lg"
@@ -239,8 +258,8 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                 </div>
                             </div>
 
-                            {/* Content - Right Side */}
-                            <div className="flex-1 min-w-0 flex flex-col justify-between">
+                            {/* Content - Hidden on mobile (shown in logo row), visible on desktop */}
+                            <div className="hidden sm:flex flex-1 min-w-0 flex-col justify-between">
                                 <div>
                                     <h3 className="text-2xl font-black text-white mb-5 truncate group-hover:text-accent-primary transition-colors">
                                         {account.name}
@@ -262,19 +281,18 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                     </div>
                                 </div>
 
+                                {/* Balance Section - Desktop: Inside content column */}
                                 <div className="mt-auto pt-6">
                                     <div className="flex justify-between items-end mb-2">
                                         <p className="text-xs text-secondary uppercase tracking-wider font-bold">
                                             {isPrivate ? 'Contribución' : 'Saldo Actual'}
                                         </p>
-
-                                        {/* Percentage Change Indicator */}
+                                        {/* Percentage Change Indicator - Desktop */}
                                         {(() => {
                                             const prevBalance = previousAccounts?.[account.id];
                                             if (prevBalance !== undefined && prevBalance !== 0) {
                                                 const diff = account.balance - prevBalance;
                                                 const pct = (diff / prevBalance) * 100;
-                                                // Only show if there is a change (and maybe ignore very small changes?)
                                                 if (Math.abs(pct) > 0.01) {
                                                     const isPos = pct >= 0;
                                                     return (
@@ -288,18 +306,76 @@ const AccountList = ({ accounts, onAddAccount, onDeleteAccount, onEditAccount, i
                                             return null;
                                         })()}
                                     </div>
-                                    <div className="flex items-baseline gap-3">
-                                        <p className={`text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight truncate transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
-                                            {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(account.balance)}
+                                    <div className="flex items-baseline justify-between gap-4">
+                                        <p className={`text-3xl lg:text-4xl font-black text-emerald-400 tracking-tight transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
+                                            {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(account.balance)}
                                         </p>
-                                        {isPrivate && (
-                                            <p className="text-xl font-bold text-accent-primary animate-fade-in">
-                                                {totalPatrimony > 0 ? ((account.balance / totalPatrimony) * 100).toFixed(1) : 0}%
-                                            </p>
-                                        )}
+                                        <p className="text-lg font-bold text-accent-primary whitespace-nowrap">
+                                            {totalPatrimony > 0 ? ((account.balance / totalPatrimony) * 100).toFixed(1) : 0}%
+                                        </p>
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Row 2: Balance + Actions (Mobile only) */}
+                            <div className="flex items-center justify-between gap-2 sm:hidden">
+                                {/* Balance Section */}
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <p className="text-[10px] text-secondary uppercase tracking-wider font-bold hidden min-[375px]:block">
+                                            {isPrivate ? 'Contribución' : 'Saldo'}
+                                        </p>
+                                        {/* Percentage Change Indicator - Mobile */}
+                                        {(() => {
+                                            const prevBalance = previousAccounts?.[account.id];
+                                            if (prevBalance !== undefined && prevBalance !== 0) {
+                                                const diff = account.balance - prevBalance;
+                                                const pct = (diff / prevBalance) * 100;
+                                                if (Math.abs(pct) > 0.01) {
+                                                    const isPos = pct >= 0;
+                                                    return (
+                                                        <div className={`flex items-center gap-0.5 text-[10px] font-bold ${isPos ? 'text-emerald-400' : 'text-red-400'}`}>
+                                                            {isPos ? <TrendingUp size={10} /> : <TrendingUp size={10} className="rotate-180" />}
+                                                            {isPos ? '+' : ''}{pct.toFixed(1)}%
+                                                        </div>
+                                                    );
+                                                }
+                                            }
+                                            return null;
+                                        })()}
+                                    </div>
+                                    <div className="flex items-baseline justify-between gap-2">
+                                        <p className={`text-lg font-black text-emerald-400 tracking-tight truncate transition-all duration-500 ${isPrivate ? 'blur-md select-none' : ''}`}>
+                                            {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(account.balance)}
+                                        </p>
+                                        <p className="text-xs font-semibold text-accent-primary whitespace-nowrap">
+                                            {totalPatrimony > 0 ? ((account.balance / totalPatrimony) * 100).toFixed(1) : 0}%
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex gap-1.5 opacity-100 transition-all duration-300 flex-shrink-0">
+                                    <button
+                                        onClick={() => handleStartEdit(account)}
+                                        className="p-2 rounded-lg bg-accent-primary/10 text-accent-primary hover:bg-accent-primary hover:text-white transition-all shadow-lg"
+                                        title="Editar cuenta"
+                                    >
+                                        <Pencil size={14} />
+                                    </button>
+                                    {onDeleteAccount && (
+                                        <button
+                                            onClick={() => onDeleteAccount(account.id)}
+                                            className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-lg"
+                                            title="Eliminar cuenta"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Actions - Desktop: moved below logo */}
                         </div>
                     </div>
                 ))}
